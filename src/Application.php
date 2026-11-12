@@ -30,7 +30,7 @@ final readonly class Application
           --scopes="A B"      login: ask for exactly these scopes
           --client-id=ID      login: your own Twinfield client instead of Twinfield Connect
           --client-secret=S   login: the secret of your own client
-          --redirect-uri=URI  login: default http://localhost:8765/callback
+          --redirect-uri=URI  login: default TWINFIELD_REDIRECT_URI or http://localhost:8765/callback
           --connect-url=URL   login: a Twinfield Connect you run yourself
 
         In PHP:
@@ -89,7 +89,8 @@ final readonly class Application
     private function login(array $options): int
     {
         $profile = $this->profileName($options);
-        $redirectUri = $this->option($options, 'redirect-uri') ?? LoopbackLogin::REDIRECT_URI;
+        $redirectUri = $this->option($options, 'redirect-uri') ?? Env::get('TWINFIELD_REDIRECT_URI')
+            ?? LoopbackLogin::REDIRECT_URI;
         $clientId = $this->option($options, 'client-id') ?? Env::get('TWINFIELD_CLIENT_ID');
         $connectUrl = null;
 

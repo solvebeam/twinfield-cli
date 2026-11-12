@@ -63,7 +63,7 @@ Or choose the profile with `TWINFIELD_PROFILE=acme`.
 vendor/bin/twinfield login --client-id=… --client-secret=… --redirect-uri=http://localhost:8765/callback
 ```
 
-The redirect URI must be registered with your client.
+The redirect URI must be registered with your client. Instead of the options you can set `TWINFIELD_CLIENT_ID`, `TWINFIELD_CLIENT_SECRET` and `TWINFIELD_REDIRECT_URI`.
 
 ## Where the login is stored
 
@@ -81,6 +81,7 @@ When `TWINFIELD_REFRESH_TOKEN` is set, `Credentials::default()` uses it instead 
 | `TWINFIELD_CONNECT_CLIENT_ID`, `TWINFIELD_CONNECT_CLIENT_SECRET` | The Twinfield Connect client, see `credentials.json`. |
 | `TWINFIELD_CLIENT_ID`, `TWINFIELD_CLIENT_SECRET` | Or your own Twinfield client. |
 | `TWINFIELD_CONNECT_URL` | Only for a Twinfield Connect you run yourself. |
+| `TWINFIELD_REDIRECT_URI` | Only when your client does not use `http://localhost:8765/callback`. |
 
 Tokens from environment variables are not written back.
 
