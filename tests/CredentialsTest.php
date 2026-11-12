@@ -14,7 +14,7 @@ final class CredentialsTest extends TestCase
     public function testNotLoggedIn(): void
     {
         $this->expectException(CredentialsException::class);
-        $this->expectExceptionMessage('Run: vendor/bin/twinfield login');
+        $this->expectExceptionMessage('Run: vendor/bin/twf login');
 
         Credentials::default();
     }

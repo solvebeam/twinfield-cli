@@ -10,7 +10,7 @@ use SolveBeam\Twinfield\OAuth2\Scope;
 use Throwable;
 
 /**
- * The `twinfield` command.
+ * The `twf` command, or `twinfield` in full.
  */
 final readonly class Application
 {
@@ -18,12 +18,12 @@ final readonly class Application
         Log in to Twinfield for tests, examples and scripts.
 
         Usage:
-          twinfield login     Log in with your browser
-          twinfield status    Show the logins
-          twinfield token     Print a valid access token
-          twinfield logout    Remove a login
+          twf login     Log in with your browser
+          twf status    Show the logins
+          twf token     Print a valid access token
+          twf logout    Remove a login
 
-        `twf` is the short name of `twinfield`: twf login, twf status, …
+        `twinfield` is the long name of `twf`: twinfield login, twinfield status, …
 
         Options:
           --profile=NAME      The login to use, for more organisations (default: TWINFIELD_PROFILE or "default")

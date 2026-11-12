@@ -106,7 +106,7 @@ final class CredentialStoreTest extends TestCase
     public function testRefreshOfAnUnknownProfile(): void
     {
         $this->expectException(CredentialsException::class);
-        $this->expectExceptionMessage('vendor/bin/twinfield login --profile=acme');
+        $this->expectExceptionMessage('vendor/bin/twf login --profile=acme');
 
         $this->store()->refresh('acme');
     }

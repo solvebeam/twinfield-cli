@@ -38,7 +38,7 @@ abstract class TestCase extends BaseTestCase
         putenv('TWINFIELD_CONFIG_DIR=' . $this->directory);
 
         // The messages name the command the way it was last called.
-        CredentialsException::calledAs('vendor/bin/twinfield');
+        CredentialsException::calledAs('vendor/bin/twf');
     }
 
     protected function tearDown(): void

@@ -4,7 +4,7 @@ Log in to Twinfield once from the command line, then use that login in tests, ex
 
 ```sh
 composer require --dev solvebeam/twinfield-cli
-vendor/bin/twinfield login
+vendor/bin/twf login
 ```
 
 ```php
@@ -33,15 +33,15 @@ In an application where users log in themselves, use [solvebeam/twinfield-connec
 ## Commands
 
 ```sh
-vendor/bin/twinfield login           # log in with your browser
-vendor/bin/twinfield login --manual  # paste the redirected URL yourself, e.g. over SSH
-vendor/bin/twinfield login --rest    # also ask for all REST API scopes
-vendor/bin/twinfield status          # show the logins
-vendor/bin/twinfield token           # print a valid access token, e.g. for curl
-vendor/bin/twinfield logout          # remove the login
+vendor/bin/twf login           # log in with your browser
+vendor/bin/twf login --manual  # paste the redirected URL yourself, e.g. over SSH
+vendor/bin/twf login --rest    # also ask for all REST API scopes
+vendor/bin/twf status          # show the logins
+vendor/bin/twf token           # print a valid access token, e.g. for curl
+vendor/bin/twf logout          # remove the login
 ```
 
-`vendor/bin/twf` is the short name of `vendor/bin/twinfield`, after the `twf.` prefix Twinfield uses itself: `vendor/bin/twf login`.
+The command is `twf`, after the `twf.` prefix Twinfield uses itself (`twf.organisationCode`). `vendor/bin/twinfield` is the same command under its long name.
 
 `login` opens the Twinfield login in your browser and catches the redirect on `http://localhost:8765/callback`.
 
@@ -50,7 +50,7 @@ vendor/bin/twinfield logout          # remove the login
 Use a profile for each organisation:
 
 ```sh
-vendor/bin/twinfield login --profile=acme
+vendor/bin/twf login --profile=acme
 ```
 
 ```php
@@ -62,7 +62,7 @@ Or choose the profile with `TWINFIELD_PROFILE=acme`.
 ### Your own Twinfield client
 
 ```sh
-vendor/bin/twinfield login --client-id=… --client-secret=… --redirect-uri=http://localhost:8765/callback
+vendor/bin/twf login --client-id=… --client-secret=… --redirect-uri=http://localhost:8765/callback
 ```
 
 The redirect URI must be registered with your client. Instead of the options you can set `TWINFIELD_CLIENT_ID`, `TWINFIELD_CLIENT_SECRET` and `TWINFIELD_REDIRECT_URI`.

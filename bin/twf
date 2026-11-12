@@ -3,5 +3,13 @@
 
 declare(strict_types=1);
 
-// The short name of bin/twinfield.
-require __DIR__ . '/twinfield';
+use SolveBeam\Twinfield\Cli\Application;
+use SolveBeam\Twinfield\Cli\CredentialStore;
+
+// Installed as a dependency, Composer's bin proxy tells where the autoloader is.
+$autoload = $GLOBALS['_composer_autoload_path'] ?? __DIR__ . '/../vendor/autoload.php';
+
+require $autoload;
+
+/** @var list<string> $argv */
+exit((new Application(STDIN, STDOUT, STDERR, CredentialStore::default()))->run($argv));

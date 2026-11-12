@@ -4,5 +4,5 @@ parameters:
   paths:
     - src
     - tests
-    - bin/twinfield
     - bin/twf
+    - bin/twinfield

@@ -10,16 +10,16 @@ final class ApplicationTest extends TestCase
 {
     public function testHelpWithoutACommand(): void
     {
-        [$status, $output, $error] = $this->twinfield();
+        [$status, $output, $error] = $this->twf();
 
         self::assertSame(0, $status);
-        self::assertStringContainsString('twinfield login', $output);
+        self::assertStringContainsString('twf login', $output);
         self::assertSame('', $error);
     }
 
     public function testHelpOption(): void
     {
-        [$status, $output] = $this->twinfield('status', '--help');
+        [$status, $output] = $this->twf('status', '--help');
 
         self::assertSame(0, $status);
         self::assertStringContainsString('Usage:', $output);
@@ -27,7 +27,7 @@ final class ApplicationTest extends TestCase
 
     public function testUnknownCommand(): void
     {
-        [$status, $output, $error] = $this->twinfield('foo');
+        [$status, $output, $error] = $this->twf('foo');
 
         self::assertSame(1, $status);
         self::assertSame('', $output);
@@ -36,7 +36,7 @@ final class ApplicationTest extends TestCase
 
     public function testUnknownOption(): void
     {
-        [$status, , $error] = $this->twinfield('status', '--foo');
+        [$status, , $error] = $this->twf('status', '--foo');
 
         self::assertSame(1, $status);
         self::assertStringContainsString('Unknown option "--foo"', $error);
@@ -44,7 +44,7 @@ final class ApplicationTest extends TestCase
 
     public function testOptionWithoutAValue(): void
     {
-        [$status, , $error] = $this->twinfield('token', '--profile');
+        [$status, , $error] = $this->twf('token', '--profile');
 
         self::assertSame(1, $status);
         self::assertStringContainsString('Option --profile needs a value', $error);
@@ -52,7 +52,7 @@ final class ApplicationTest extends TestCase
 
     public function testStatusWhenNotLoggedIn(): void
     {
-        [$status, , $error] = $this->twinfield('status');
+        [$status, , $error] = $this->twf('status');
 
         self::assertSame(1, $status);
         self::assertStringContainsString('Not logged in to Twinfield', $error);
@@ -63,7 +63,7 @@ final class ApplicationTest extends TestCase
         $this->store()->saveProfile('default', self::profile());
         $this->store()->saveProfile('acme', self::profile(organisationCode: 'ACME'));
 
-        [$status, $output] = $this->twinfield('status');
+        [$status, $output] = $this->twf('status');
 
         self::assertSame(0, $status);
         self::assertStringContainsString('default (in use)', $output);
@@ -76,7 +76,7 @@ final class ApplicationTest extends TestCase
         $this->store()->saveProfile('default', self::profile());
         $this->store()->saveProfile('acme', self::profile(organisationCode: 'ACME'));
 
-        [$status, $output] = $this->twinfield('status', '--profile=acme');
+        [$status, $output] = $this->twf('status', '--profile=acme');
 
         self::assertSame(0, $status);
         self::assertStringNotContainsString('EXAMPLE', $output);
@@ -86,7 +86,7 @@ final class ApplicationTest extends TestCase
     {
         $this->store()->saveProfile('default', self::profile());
 
-        [$status, $output] = $this->twinfield('token');
+        [$status, $output] = $this->twf('token');
 
         self::assertSame(0, $status);
         self::assertSame('access-token' . PHP_EOL, $output);
@@ -96,13 +96,13 @@ final class ApplicationTest extends TestCase
     {
         $this->store()->saveProfile('acme', self::profile());
 
-        [$status, $output] = $this->twinfield('logout', '--profile=acme');
+        [$status, $output] = $this->twf('logout', '--profile=acme');
 
         self::assertSame(0, $status);
         self::assertStringContainsString('profile "acme"', $output);
         self::assertNull($this->store()->profile('acme'));
 
-        [$status, , $error] = $this->twinfield('logout', '--profile=acme');
+        [$status, , $error] = $this->twf('logout', '--profile=acme');
 
         self::assertSame(1, $status);
         self::assertStringContainsString('login --profile=acme', $error);
@@ -110,7 +110,7 @@ final class ApplicationTest extends TestCase
 
     public function testLoginRefusesASecretWithoutAClientId(): void
     {
-        [$status, , $error] = $this->twinfield('login', '--client-secret=secret');
+        [$status, , $error] = $this->twf('login', '--client-secret=secret');
 
         self::assertSame(1, $status);
         self::assertStringContainsString('--client-id', $error);
@@ -118,7 +118,7 @@ final class ApplicationTest extends TestCase
 
     public function testManualLoginNamesTheRedirectUriAndChecksTheState(): void
     {
-        [$status, $output, $error] = $this->twinfieldWithInput(
+        [$status, $output, $error] = $this->twfWithInput(
             'http://localhost:9000/callback?code=abc&state=not-the-state' . PHP_EOL,
             'login',
             '--manual',
@@ -136,7 +136,7 @@ final class ApplicationTest extends TestCase
 
     public function testManualLoginReportsTheErrorOfTwinfield(): void
     {
-        [$status, , $error] = $this->twinfieldWithInput(
+        [$status, , $error] = $this->twfWithInput(
             'http://localhost:8765/callback?error=access_denied&error_description=No' . PHP_EOL,
             'login',
             '--manual',
@@ -150,22 +150,22 @@ final class ApplicationTest extends TestCase
 
     public function testMessagesNameTheCommandAsItWasCalled(): void
     {
-        [, , $error] = $this->twinfieldAs('vendor/bin/twf', 'logout', '--profile=acme');
+        [, , $error] = $this->twfAs('vendor/bin/twf', 'logout', '--profile=acme');
 
         self::assertStringContainsString('Run: vendor/bin/twf login --profile=acme', $error);
 
-        [, , $error] = $this->twinfieldAs('bin/twinfield', 'foo');
+        [, , $error] = $this->twfAs('bin/twinfield', 'foo');
 
         self::assertStringContainsString('See: bin/twinfield help', $error);
     }
 
     public function testACommandOnThePathIsNamedWithoutItsDirectory(): void
     {
-        [, , $error] = $this->twinfieldAs('/home/jdoe/.composer/vendor/bin/twf', 'status');
+        [, , $error] = $this->twfAs('/home/jdoe/.composer/vendor/bin/twf', 'status');
 
         self::assertStringContainsString('Run: twf login', $error);
 
-        [, , $error] = $this->twinfieldAs('C:\\Users\\jdoe\\vendor\\bin\\twf', 'status');
+        [, , $error] = $this->twfAs('C:\\Users\\jdoe\\vendor\\bin\\twf', 'status');
 
         self::assertStringContainsString('Run: twf login', $error);
     }
@@ -173,23 +173,23 @@ final class ApplicationTest extends TestCase
     /**
      * @return array{int, string, string}
      */
-    private function twinfield(string ...$arguments): array
+    private function twf(string ...$arguments): array
     {
-        return $this->twinfieldWithInput('', ...$arguments);
+        return $this->twfWithInput('', ...$arguments);
     }
 
     /**
      * @return array{int, string, string} Exit status, standard output and standard error.
      */
-    private function twinfieldWithInput(string $input, string ...$arguments): array
+    private function twfWithInput(string $input, string ...$arguments): array
     {
-        return $this->twinfieldAs('vendor/bin/twinfield', ...$arguments, input: $input);
+        return $this->twfAs('vendor/bin/twf', ...$arguments, input: $input);
     }
 
     /**
      * @return array{int, string, string} Exit status, standard output and standard error.
      */
-    private function twinfieldAs(string $script, string ...$arguments): array
+    private function twfAs(string $script, string ...$arguments): array
     {
         $input = $arguments['input'] ?? '';
 

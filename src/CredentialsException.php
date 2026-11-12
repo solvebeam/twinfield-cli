@@ -12,10 +12,10 @@ use RuntimeException;
 final class CredentialsException extends RuntimeException
 {
     /** The command as the user typed it; outside the command line tool, the one of Composer. */
-    private static string $command = 'vendor/bin/twinfield';
+    private static string $command = 'vendor/bin/twf';
 
     /**
-     * Makes the messages name the command the way it was called, e.g. `vendor/bin/twf`.
+     * Makes the messages name the command the way it was called, e.g. `vendor/bin/twinfield`.
      *
      * @internal
      *
@@ -36,7 +36,7 @@ final class CredentialsException extends RuntimeException
     }
 
     /**
-     * The command line of a command, e.g. `vendor/bin/twinfield status`.
+     * The command line of a command, e.g. `vendor/bin/twf status`.
      *
      * @internal
      */
