@@ -234,10 +234,11 @@ final readonly class CredentialStore
 
             $data = $change($this->decode((string) stream_get_contents($handle)));
 
-            ftruncate($handle, 0);
-            rewind($handle);
+            // Before the file is emptied: when this throws, the file stays as it was.
             $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 
+            ftruncate($handle, 0);
+            rewind($handle);
             fwrite($handle, $json . "\n");
             fflush($handle);
         } finally {

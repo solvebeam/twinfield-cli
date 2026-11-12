@@ -111,7 +111,7 @@ The redirect URI must be registered with your client. Instead of the options you
 
 ## Where the login is stored
 
-In `~/.config/twinfield/credentials.json`, or in `$XDG_CONFIG_HOME/twinfield/` or `$TWINFIELD_CONFIG_DIR/` when set. Only you can read the file (0600).
+In `~/.config/twinfield/credentials.json`, or in `$XDG_CONFIG_HOME/twinfield/` or `$TWINFIELD_CONFIG_DIR/` when set. Only you can read the file (0600); on Windows the permissions of your user folder protect it.
 
 The file holds the refresh token and the last access token. `Credentials::default()` uses the access token until it expires, then refreshes it and writes the new tokens back. Writes lock the file, so processes that run at the same time do not overwrite each other's refresh token.
 
@@ -132,3 +132,5 @@ Tokens from environment variables are not written back.
 ## License
 
 The MIT License (MIT). See [LICENSE](LICENSE).
+
+Twinfield and Wolters Kluwer are trademarks of Wolters Kluwer. Their names are used only to refer to their products.

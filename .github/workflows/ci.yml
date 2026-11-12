@@ -35,3 +35,39 @@ jobs:
       - run: composer phpstan
 
       - run: composer phpunit
+
+  # The jobs above install composer.lock, which has symfony/console 7. These test the other versions
+  # composer.json allows.
+  dependencies:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Lowest dependencies
+            php: '8.3'
+            update: composer update --prefer-lowest --prefer-stable --no-interaction --no-progress
+          - name: Symfony 8
+            php: '8.5'
+            update: composer update --with symfony/console:^8.0 --with-all-dependencies --no-interaction --no-progress
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      # composer.json pins the platform to PHP 8.3.0 for the lock file; Symfony 8 needs PHP 8.4.
+      - run: composer config --unset platform.php
+
+      - run: ${{ matrix.update }}
+
+      - run: composer show symfony/console
+
+      - run: composer phpstan
+
+      - run: composer phpunit

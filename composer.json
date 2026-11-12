@@ -40,6 +40,7 @@
   },
   "require": {
     "php": "^8.3",
+    "ext-dom": "*",
     "ext-json": "*",
     "league/oauth2-client": "^2.9",
     "psr/http-client": "^1.0",

@@ -22,7 +22,7 @@ The first of these that applies:
 - For each [profile](/guides/profiles/): the client, the refresh token, the last access token and when it expires, and the organisation, user and cluster of the login.
 - The client the Twinfield CLI registered with Twinfield Connect on this machine.
 
-Only you can read the file: it has mode `0600`, and its directory is created with mode `0700`.
+Only you can read the file: it has mode `0600`, and its directory is created with mode `0700`. On Windows these modes do nothing; there the permissions of your user folder protect the file.
 
 :::caution
 The file holds refresh tokens and client secrets. Do not commit it and do not share it.
