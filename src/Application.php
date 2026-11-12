@@ -15,7 +15,7 @@ use Throwable;
 final readonly class Application
 {
     private const string HELP = <<<'TXT'
-        Log in to Twinfield for tests, examples and scripts.
+        The Twinfield command line tool: log in once, then use that login from the shell and from PHP.
 
         Usage:
           %1$s login     Log in with your browser

@@ -1,6 +1,6 @@
 {
   "name": "solvebeam/twinfield-cli",
-  "description": "Log in to Twinfield from the command line, for tests, examples and scripts",
+  "description": "The Twinfield command line tool: log in once with twf, then use that login from the shell and from PHP",
   "homepage": "https://github.com/solvebeam/twinfield-cli",
   "license": "MIT",
   "authors": [
