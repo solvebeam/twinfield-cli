@@ -90,10 +90,20 @@ final readonly class LoopbackLogin
 
     private static function openBrowser(string $url): void
     {
+        if (PHP_OS_FAMILY === 'Windows') {
+            // Without a shell: escapeshellarg() replaces the "%" of the URL with a space on Windows.
+            $process = @proc_open(['rundll32', 'url.dll,FileProtocolHandler', $url], [], $pipes);
+
+            if (is_resource($process)) {
+                proc_close($process);
+            }
+
+            return;
+        }
+
         $command = match (PHP_OS_FAMILY) {
             'Darwin' => 'open ' . escapeshellarg($url),
             'Linux' => 'xdg-open ' . escapeshellarg($url) . ' >/dev/null 2>&1 &',
-            'Windows' => 'start "" ' . escapeshellarg($url),
             default => null,
         };
 
