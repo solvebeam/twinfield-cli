@@ -45,6 +45,7 @@ vendor/bin/twf token           # print a valid access token, e.g. for curl
 vendor/bin/twf logout          # remove the login
 vendor/bin/twf office list     # list the offices
 vendor/bin/twf process-xml     # send an XML request
+vendor/bin/twf deleted-transaction list --office=1000 # list the deleted transactions
 vendor/bin/twf list            # show all commands
 vendor/bin/twf login --help    # show the options of a command
 ```
@@ -86,6 +87,21 @@ echo '<read><type>office</type><code>1000</code></read>' | vendor/bin/twf proces
 The request comes from a file or from standard input; `--office` is the code of the office (company) the request is for. The response is printed as Twinfield returned it, and indented in a terminal.
 
 When Twinfield does not process (all of) the request, the response is printed too: it has the messages (`msg`) on the elements they are about. The error goes to standard error and the exit status is 1.
+
+### Deleted transactions
+
+`deleted-transaction list` lists the transactions that were deleted in an office, the newest deletion first, for example to keep a copy of the transactions in sync:
+
+```sh
+vendor/bin/twf deleted-transaction list --office=1000 --from=2026-11-01  # deleted since 1 November
+vendor/bin/twf deleted-transaction list --office=1000 --day-book=BNK     # of one day book
+vendor/bin/twf deleted-transaction list --office=1000 --limit=10         # the last 10 deletions
+vendor/bin/twf deleted-transaction list --office=1000 --json             # JSON, e.g. for jq
+```
+
+`--from` and `--to` are about the date of deletion; both days are included. Twinfield has no paging here, so without `--from` you get all deleted transactions of the office.
+
+In a terminal they are a table. In a pipe they are tab-separated lines without a header, with the day book, number, transaction date, moment of deletion, user and reason.
 
 ### Profiles
 

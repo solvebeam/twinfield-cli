@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace SolveBeam\Twinfield\Cli\Command;
 
-use InvalidArgumentException;
 use SolveBeam\Twinfield\Cli\CredentialsException;
 use SolveBeam\Twinfield\Office\OfficeSummary;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -86,21 +85,6 @@ final class OfficeListCommand extends Command
         return self::SUCCESS;
     }
 
-    private function limit(InputInterface $input): ?int
-    {
-        $limit = $input->getOption('limit');
-
-        if ($limit === null) {
-            return null;
-        }
-
-        if (!is_string($limit) || !ctype_digit($limit) || (int) $limit < 1) {
-            throw new InvalidArgumentException('--limit must be a number of 1 or more.');
-        }
-
-        return (int) $limit;
-    }
-
     /**
      * @param list<OfficeSummary> $offices
      */
@@ -148,14 +132,7 @@ final class OfficeListCommand extends Command
      */
     private static function lines(array $offices): array
     {
-        return array_map(
-            static fn (array $row): string => implode("\t", array_map(
-                // A tab or a line break in a value would start a new column or line.
-                static fn (string $value): string => trim((string) preg_replace('/[\t\r\n]+/', ' ', $value)),
-                $row,
-            )),
-            self::rows($offices),
-        );
+        return array_map(self::line(...), self::rows($offices));
     }
 
     /**

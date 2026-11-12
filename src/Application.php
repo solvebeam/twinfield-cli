@@ -7,6 +7,7 @@ namespace SolveBeam\Twinfield\Cli;
 use Composer\InstalledVersions;
 use Psr\Http\Client\ClientInterface;
 use RuntimeException;
+use SolveBeam\Twinfield\Cli\Command\DeletedTransactionListCommand;
 use SolveBeam\Twinfield\Cli\Command\LoginCommand;
 use SolveBeam\Twinfield\Cli\Command\LogoutCommand;
 use SolveBeam\Twinfield\Cli\Command\OfficeListCommand;
@@ -41,6 +42,7 @@ final class Application extends ConsoleApplication
             new LogoutCommand($store),
             new OfficeListCommand($store, $httpClient),
             new ProcessXmlCommand($store, $httpClient),
+            new DeletedTransactionListCommand($store, $httpClient),
         ]);
     }
 

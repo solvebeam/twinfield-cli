@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `twf deleted-transaction list`: list the transactions that were deleted in an office, filtered by day book and date of deletion.
+
 ## [0.1.0] - 2026-11-12
 
 First release.

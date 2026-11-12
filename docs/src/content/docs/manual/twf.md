@@ -15,6 +15,7 @@ The command is `twf`, after the `twf.` prefix Twinfield uses itself (`twf.organi
 
 | Command | Description |
 |---|---|
+| [`twf deleted-transaction list`](/manual/twf_deleted-transaction_list/) | List the deleted transactions |
 | [`twf login`](/manual/twf_login/) | Log in with your browser |
 | [`twf logout`](/manual/twf_logout/) | Remove a login |
 | [`twf office list`](/manual/twf_office_list/) | List the offices |

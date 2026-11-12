@@ -22,6 +22,11 @@ final class ApplicationTest extends TestCase
         ['2000', 'Example <Holding> B.V.', '0a1b2c3d-1111-2222-3333-444455556666', 'BE', '3', '21'],
     ];
 
+    private const array DELETED_TRANSACTIONS = [
+        ['BNK', '202600045', '2026-11-02T00:00:00', '2026-11-04T05:31:52.42', 'JDOE', 'Booked <twice>'],
+        ['MEMO', '202600012', '2026-10-30T00:00:00', '2026-11-03T16:02:10.003', 'JDOE', "Wrong\tperiod"],
+    ];
+
     /** @var list<Response> The responses of Twinfield, in order. */
     private array $responses = [];
 
@@ -339,6 +344,188 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('Example B.V.', $output);
     }
 
+    public function testDeletedTransactionListPrintsTabSeparatedLinesInAPipe(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::deletedTransactionsResponse(self::DELETED_TRANSACTIONS);
+
+        [$status, $output, $error] = $this->twf('deleted-transaction', 'list', '--office=1000');
+
+        self::assertSame('', $error);
+        self::assertSame(0, $status);
+        self::assertSame(
+            "BNK\t202600045\t2026-11-02\t2026-11-04 05:31:52\tJDOE\tBooked <twice>" . PHP_EOL
+            . "MEMO\t202600012\t2026-10-30\t2026-11-03 16:02:10\tJDOE\tWrong period" . PHP_EOL,
+            $output,
+        );
+        self::assertCount(1, $this->requests);
+        self::assertStringContainsString('GetDeletedTransactions', $this->requests[0]);
+        self::assertMatchesRegularExpression('~CompanyCode>1000</~', $this->requests[0]);
+        self::assertStringNotContainsString('BNK', $this->requests[0]);
+    }
+
+    public function testDeletedTransactionListFiltersOnDayBookAndDates(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::deletedTransactionsResponse([self::DELETED_TRANSACTIONS[0]]);
+
+        [$status, $output] = $this->twf(
+            'deleted-transaction',
+            'list',
+            '--office=1000',
+            '--day-book=BNK',
+            '--from=2026-11-01',
+            '--to=2026-11-30',
+        );
+
+        self::assertSame(0, $status);
+        self::assertStringStartsWith('BNK', $output);
+        self::assertMatchesRegularExpression('~Daybook>BNK</~', $this->requests[0]);
+        self::assertMatchesRegularExpression('~DateFrom>2026-11-01T00:00:00~', $this->requests[0]);
+        self::assertMatchesRegularExpression('~DateTo>2026-11-30T00:00:00~', $this->requests[0]);
+    }
+
+    public function testDeletedTransactionListWithALimit(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::deletedTransactionsResponse(self::DELETED_TRANSACTIONS);
+
+        [$status, $output] = $this->twf('deleted-transaction', 'list', '--office=1000', '--limit=1');
+
+        self::assertSame(0, $status);
+        self::assertSame(1, substr_count($output, PHP_EOL));
+        self::assertStringStartsWith('BNK', $output);
+    }
+
+    public function testDeletedTransactionListAsJson(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::deletedTransactionsResponse(self::DELETED_TRANSACTIONS);
+
+        [$status, $output] = $this->twf('deleted-transaction', 'list', '--office=1000', '--json');
+
+        self::assertSame(0, $status);
+        self::assertSame(
+            [
+                'office' => '1000',
+                'dayBook' => 'BNK',
+                'number' => 202600045,
+                'transactionDate' => '2026-11-02',
+                'deletionDate' => '2026-11-04T05:31:52.420',
+                'user' => 'JDOE',
+                'reason' => 'Booked <twice>',
+            ],
+            json_decode($output, true, flags: JSON_THROW_ON_ERROR)[0],
+        );
+    }
+
+    public function testDeletedTransactionListWithoutDeletedTransactions(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::deletedTransactionsResponse([]);
+
+        [$status, $output] = $this->twf('deleted-transaction', 'list', '--office=1000');
+
+        self::assertSame(0, $status);
+        self::assertSame('', $output);
+
+        $this->responses[] = self::deletedTransactionsResponse([]);
+
+        [$status, $output] = $this->twf('deleted-transaction', 'list', '--office=1000', '--json');
+
+        self::assertSame(0, $status);
+        self::assertSame('[]' . PHP_EOL, $output);
+    }
+
+    public function testDeletedTransactionListNeedsAnOffice(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+
+        [$status, , $error] = $this->twf('deleted-transaction', 'list');
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString(
+            'No office. Give the code of the office: vendor/bin/twf deleted-transaction list --office=1000',
+            $error,
+        );
+        self::assertSame([], $this->requests);
+    }
+
+    public function testDeletedTransactionListRefusesADateThatIsNotADate(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+
+        foreach (['yesterday', '04-11-2026', '2026-02-31'] as $date) {
+            [$status, , $error] = $this->twf('deleted-transaction', 'list', '--office=1000', '--from=' . $date);
+
+            self::assertSame(1, $status);
+            self::assertStringContainsString('--from must be a date like 2026-11-04.', $error);
+        }
+
+        [$status, , $error] = $this->twf('deleted-transaction', 'list', '--office=1000', '--to=2026-11');
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString('--to must be a date like 2026-11-04.', $error);
+
+        [$status, , $error] = $this->twf(
+            'deleted-transaction',
+            'list',
+            '--office=1000',
+            '--from=2026-11-30',
+            '--to=2026-11-01',
+        );
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString('From date 2026-11-30 is after to date 2026-11-01.', $error);
+
+        [$status, , $error] = $this->twf('deleted-transaction', 'list', '--office=1000', '--limit=0');
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString('--limit must be a number of 1 or more.', $error);
+        self::assertSame([], $this->requests);
+    }
+
+    public function testDeletedTransactionListReportsTheFaultOfTwinfield(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = new Response(500, ['Content-Type' => 'text/xml; charset=utf-8'], <<<'XML'
+            <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+              <s:Body>
+                <s:Fault>
+                  <faultcode>s:Client</faultcode>
+                  <faultstring xml:lang="nl-NL">Dagboek XXXX bestaat niet.</faultstring>
+                  <detail>
+                    <DeletedTransactionsServiceFault>
+                      <Code>InvalidDaybook</Code>
+                      <Message>Dagboek XXXX bestaat niet.</Message>
+                    </DeletedTransactionsServiceFault>
+                  </detail>
+                </s:Fault>
+              </s:Body>
+            </s:Envelope>
+            XML);
+
+        [$status, $output, $error] = $this->twf('deleted-transaction', 'list', '--office=1000', '--day-book=XXXX');
+
+        self::assertSame(1, $status);
+        self::assertSame('', $output);
+        self::assertStringStartsWith('Error: ', $error);
+        self::assertStringContainsString('Dagboek XXXX bestaat niet.', $error);
+        self::assertStringContainsString('InvalidDaybook', $error);
+    }
+
+    public function testDeletedTransactionAloneShowsItsCommands(): void
+    {
+        [$status, $output] = $this->twf('deleted-transaction');
+
+        self::assertSame(0, $status);
+        self::assertMatchesRegularExpression(
+            '/^  deleted-transaction:list +List the deleted transactions$/m',
+            $output,
+        );
+        self::assertDoesNotMatchRegularExpression('/^  office:list /m', $output);
+    }
+
     public function testProcessXmlSendsTheRequestOfStandardInput(): void
     {
         $this->store()->saveProfile('default', self::profile());
@@ -499,6 +686,46 @@ final class ApplicationTest extends TestCase
                 </SearchResponse>
               </soap:Body>
             </soap:Envelope>
+            XML);
+    }
+
+    /**
+     * A response of the DeletedTransactionsService with these deleted transactions.
+     *
+     * @param list<array{string, string, string, string, string, string}> $rows Day book, number,
+     *     transaction date, deletion date, user and reason.
+     */
+    private static function deletedTransactionsResponse(array $rows): Response
+    {
+        $transactions = implode('', array_map(
+            static fn (array $row): string => vsprintf(
+                '<b:DeletedTransaction>'
+                    . '<b:Daybook>%s</b:Daybook>'
+                    . '<b:DeletionDate>%4$s</b:DeletionDate>'
+                    . '<b:ReasonForDeletion>%6$s</b:ReasonForDeletion>'
+                    . '<b:TransactionDate>%3$s</b:TransactionDate>'
+                    . '<b:TransactionNumber>%2$s</b:TransactionNumber>'
+                    . '<b:User>%5$s</b:User>'
+                    . '</b:DeletedTransaction>',
+                array_map(static fn (string $value): string => htmlspecialchars($value, ENT_XML1), $row),
+            ),
+            $rows,
+        ));
+
+        return new Response(200, ['Content-Type' => 'text/xml; charset=utf-8'], <<<XML
+            <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+              <s:Body>
+                <Result
+                  xmlns="http://www.twinfield.com/"
+                  xmlns:a="urn:deleted-transactions"
+                  xmlns:i="http://www.w3.org/2001/XMLSchema-instance"
+                  i:type="a:GetDeletedTransactionsResult">
+                  <a:DeletedTransactions xmlns:b="urn:shared">
+                    {$transactions}
+                  </a:DeletedTransactions>
+                </Result>
+              </s:Body>
+            </s:Envelope>
             XML);
     }
 

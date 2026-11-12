@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace SolveBeam\Twinfield\Cli\Command;
 
+use InvalidArgumentException;
 use Psr\Http\Client\ClientInterface;
 use SolveBeam\Twinfield\Cli\CredentialStore;
 use SolveBeam\Twinfield\Cli\Env;
@@ -48,6 +49,38 @@ abstract class Command extends ConsoleCommand
         $value = $input->getOption($name);
 
         return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    /**
+     * The value of `--limit` of a command that lists: the most items to print, or null for all.
+     */
+    protected function limit(InputInterface $input): ?int
+    {
+        $limit = $input->getOption('limit');
+
+        if ($limit === null) {
+            return null;
+        }
+
+        if (!is_string($limit) || !ctype_digit($limit) || (int) $limit < 1) {
+            throw new InvalidArgumentException('--limit must be a number of 1 or more.');
+        }
+
+        return (int) $limit;
+    }
+
+    /**
+     * A row of a list as a tab-separated line, for a pipe: `twf office list | cut -f1`.
+     *
+     * @param list<string> $row
+     */
+    protected static function line(array $row): string
+    {
+        return implode("\t", array_map(
+            // A tab or a line break in a value would start a new column or line.
+            static fn (string $value): string => trim((string) preg_replace('/[\t\r\n]+/', ' ', $value)),
+            $row,
+        ));
     }
 
     protected function profileName(InputInterface $input): string

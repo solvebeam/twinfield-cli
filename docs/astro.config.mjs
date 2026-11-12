@@ -46,6 +46,13 @@ export default defineConfig({
 					label: 'Manual',
 					items: [
 						{ label: 'twf', slug: 'manual/twf' },
+						{
+							label: 'twf deleted-transaction',
+							items: [
+								{ label: 'twf deleted-transaction', slug: 'manual/twf_deleted-transaction' },
+								{ label: 'twf deleted-transaction list', slug: 'manual/twf_deleted-transaction_list' },
+							],
+						},
 						{ label: 'twf login', slug: 'manual/twf_login' },
 						{ label: 'twf logout', slug: 'manual/twf_logout' },
 						{
