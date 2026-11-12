@@ -174,7 +174,7 @@ final readonly class Application
                 ? 'Twinfield Connect (' . $profile->connectUrl . ')'
                 : $profile->clientId));
             $this->line('  Access token:  ' . ($profile->hasValidAccessToken()
-                ? 'valid until ' . date('Y-m-d H:i:s', (int) $profile->expires)
+                ? 'valid until ' . date('Y-m-d H:i:s T', (int) $profile->expires)
                 : 'expired, refreshed on next use'));
             $this->line();
         }
