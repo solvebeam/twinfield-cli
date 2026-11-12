@@ -2,6 +2,8 @@
 
 Twinfield CLI brings Twinfield to your terminal. Free and open source.
 
+The manual, with a page for each command, is on https://cli.twinfield.solvebeam.com/.
+
 Log in to Twinfield once from the command line, then use that login in tests, examples and scripts:
 
 ```sh

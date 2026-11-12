@@ -1,7 +1,7 @@
 {
   "name": "solvebeam/twinfield-cli",
   "description": "Twinfield CLI brings Twinfield to your terminal. Free and open source.",
-  "homepage": "https://github.com/solvebeam/twinfield-cli",
+  "homepage": "https://cli.twinfield.solvebeam.com/",
   "license": "MIT",
   "authors": [
     {

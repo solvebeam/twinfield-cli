@@ -44,14 +44,13 @@ jobs:
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v5
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name != 'pull_request'
         with:
           path: docs/dist
 
-  # Until GitHub Pages is enabled for this repository, the site is only deployed when the workflow is
-  # started by hand. Remove both `if` conditions on `workflow_dispatch` to deploy on every push to main.
+  # A pull request only builds the site.
   deploy:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
