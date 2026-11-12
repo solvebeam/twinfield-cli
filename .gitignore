@@ -1,3 +1,6 @@
 /vendor/
 .DS_Store
 /.phpunit.cache/
+/docs/node_modules/
+/docs/dist/
+/docs/.astro/
