@@ -18,12 +18,12 @@ final readonly class Application
         Log in to Twinfield for tests, examples and scripts.
 
         Usage:
-          twf login     Log in with your browser
-          twf status    Show the logins
-          twf token     Print a valid access token
-          twf logout    Remove a login
+          %1$s login     Log in with your browser
+          %1$s status    Show the logins
+          %1$s token     Print a valid access token
+          %1$s logout    Remove a login
 
-        `twinfield` is the long name of `twf`: twinfield login, twinfield status, …
+        %2$s
 
         Options:
           --profile=NAME      The login to use, for more organisations (default: TWINFIELD_PROFILE or "default")
@@ -219,7 +219,11 @@ final readonly class Application
 
     private function help(): int
     {
-        $this->line(self::HELP);
+        $name = CredentialsException::commandName();
+
+        $this->line(sprintf(self::HELP, $name, $name === 'twinfield'
+            ? '`twf` is the short name of `twinfield`: twf login, twf status, …'
+            : '`twinfield` is the long name of `twf`: twinfield login, twinfield status, …'));
 
         return 0;
     }

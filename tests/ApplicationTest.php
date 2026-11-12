@@ -159,6 +159,20 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('See: bin/twinfield help', $error);
     }
 
+    public function testHelpNamesTheCommandAsItWasCalled(): void
+    {
+        [, $output] = $this->twfAs('vendor/bin/twf');
+
+        self::assertStringContainsString('  twf login     Log in with your browser', $output);
+        self::assertStringContainsString('`twinfield` is the long name of `twf`', $output);
+
+        [, $output] = $this->twfAs('vendor/bin/twinfield', '--help');
+
+        self::assertStringContainsString('  twinfield login     Log in with your browser', $output);
+        self::assertStringContainsString('`twf` is the short name of `twinfield`', $output);
+        self::assertStringNotContainsString('%', $output);
+    }
+
     public function testACommandOnThePathIsNamedWithoutItsDirectory(): void
     {
         [, , $error] = $this->twfAs('/home/jdoe/.composer/vendor/bin/twf', 'status');

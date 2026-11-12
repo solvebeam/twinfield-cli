@@ -7,7 +7,7 @@ A Composer package with the `twf` command: it logs in to Twinfield and stores th
 - `twf` is the name of the command, after the `twf.` prefix Twinfield uses itself (`twf.organisationCode`). `twinfield` is the same command under its long name.
 - Write `twf` in the README, the help text, docblocks, examples and tests: `vendor/bin/twf login`. Name `twinfield` only where the long name itself is explained.
 - `bin/twf` holds the entry point. `bin/twinfield` only requires `bin/twf`; do not put logic there.
-- Do not hard-code the command in a message. Build it with `CredentialsException::command('login --manual')`, so the message names the command the way the user called it (`vendor/bin/twf`, `vendor/bin/twinfield`, or `twf` on the PATH). Outside the command line tool it says `vendor/bin/twf`.
+- Do not hard-code the command in a message. Build it with `CredentialsException::command('login --manual')`, so the message names the command the way the user called it (`vendor/bin/twf`, `vendor/bin/twinfield`, or `twf` on the PATH). Outside the command line tool it says `vendor/bin/twf`. The help text follows the call too, with `CredentialsException::commandName()`.
 
 ## Checks
 

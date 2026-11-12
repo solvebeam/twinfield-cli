@@ -45,6 +45,16 @@ final class CredentialsException extends RuntimeException
         return self::$command . ' ' . $arguments;
     }
 
+    /**
+     * The name of the command without its directory: `twf` or `twinfield`.
+     *
+     * @internal
+     */
+    public static function commandName(): string
+    {
+        return basename(self::$command);
+    }
+
     public static function notLoggedIn(string $profile): self
     {
         return new self(sprintf('Not logged in to Twinfield. Run: %s', self::loginCommand($profile)));
