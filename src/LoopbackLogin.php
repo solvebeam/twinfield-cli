@@ -49,14 +49,16 @@ final readonly class LoopbackLogin
         ]);
         $state = $provider->getState();
 
-        $this->line('Opening the Twinfield login in your browser…');
-        $this->line('If it does not open, visit: ' . $authorizationUrl);
+        if ($manual) {
+            $this->line('Open the Twinfield login in your browser: ' . $authorizationUrl);
+        } else {
+            $this->line('Opening the Twinfield login in your browser…');
+            $this->line('If it does not open, visit: ' . $authorizationUrl);
 
-        if (!$manual) {
             self::openBrowser($authorizationUrl);
         }
 
-        $query = $manual ? $this->askForRedirect() : $this->waitForRedirect($redirectUri);
+        $query = $manual ? $this->askForRedirect($redirectUri) : $this->waitForRedirect($redirectUri);
 
         if (isset($query['error'])) {
             throw new CredentialsException(sprintf(
@@ -203,9 +205,9 @@ final readonly class LoopbackLogin
     /**
      * @return array<array-key, string>
      */
-    private function askForRedirect(): array
+    private function askForRedirect(string $redirectUri): array
     {
-        $this->line('After logging in, your browser goes to ' . self::REDIRECT_URI . ' (the page may not load).');
+        $this->line('After logging in, your browser goes to ' . $redirectUri . ' (the page may not load).');
 
         fwrite($this->output, 'Paste the full URL from the address bar: ');
 
