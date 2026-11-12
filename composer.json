@@ -42,12 +42,14 @@
     "php": "^8.3",
     "ext-json": "*",
     "league/oauth2-client": "^2.9",
+    "psr/http-client": "^1.0",
     "solvebeam/oauth2-twinfield": "^0.1.1",
     "solvebeam/twinfield": "^0.2",
     "solvebeam/twinfield-connect": "^0.1.1",
     "symfony/console": "^6.4 || ^7.0 || ^8.0"
   },
   "require-dev": {
+    "guzzlehttp/guzzle": "^7.9",
     "phpstan/phpstan": "^2.3",
     "phpunit/phpunit": "^12",
     "squizlabs/php_codesniffer": "^4.0"

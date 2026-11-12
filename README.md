@@ -41,6 +41,7 @@ vendor/bin/twf login --rest    # also ask for all REST API scopes
 vendor/bin/twf status          # show the logins
 vendor/bin/twf token           # print a valid access token, e.g. for curl
 vendor/bin/twf logout          # remove the login
+vendor/bin/twf office list     # list the offices
 vendor/bin/twf list            # show all commands
 vendor/bin/twf login --help    # show the options of a command
 ```
@@ -48,6 +49,24 @@ vendor/bin/twf login --help    # show the options of a command
 The command is `twf`, after the `twf.` prefix Twinfield uses itself (`twf.organisationCode`). `vendor/bin/twinfield` is the same command under its long name.
 
 `login` opens the Twinfield login in your browser and catches the redirect on `http://localhost:8765/callback`.
+
+### Offices
+
+`office list` lists the offices (companies, administrations) you have access to, like `gh repo list`:
+
+```sh
+vendor/bin/twf office list                # all offices
+vendor/bin/twf office list '*Holding*'    # search in code and name: * matches anything, ? one character
+vendor/bin/twf office list --limit=10     # or -L 10
+vendor/bin/twf office list --json         # JSON, e.g. for jq
+vendor/bin/twf office list --profile=acme # the offices of another login
+```
+
+In a terminal the offices are a table. In a pipe they are tab-separated lines without a header, with the code, name, country and company ID:
+
+```sh
+vendor/bin/twf office list | cut -f1
+```
 
 ### Profiles
 
