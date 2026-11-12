@@ -73,7 +73,7 @@ The file holds the refresh token and the last access token. `Credentials::defaul
 
 ## CI and environment variables
 
-When `TWINFIELD_REFRESH_TOKEN` is set, `Credentials::default()` uses it instead of the file:
+When `TWINFIELD_REFRESH_TOKEN` is set, `Credentials::default()` uses it instead of the file. `Credentials::default('acme')` always uses the profile you name.
 
 | Variable | |
 |---|---|

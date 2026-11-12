@@ -17,9 +17,9 @@ use SolveBeam\Twinfield\OAuth2\Provider\AbstractTwinfieldProvider;
  *
  * It uses, in this order:
  *
- * 1. Environment variables, for CI: `TWINFIELD_REFRESH_TOKEN` with `TWINFIELD_CLIENT_ID` and
- *    `TWINFIELD_CLIENT_SECRET` (your own Twinfield client), or with `TWINFIELD_CONNECT_CLIENT_ID`
- *    and `TWINFIELD_CONNECT_CLIENT_SECRET` (Twinfield Connect).
+ * 1. Environment variables, for CI and only when you name no profile: `TWINFIELD_REFRESH_TOKEN`
+ *    with `TWINFIELD_CLIENT_ID` and `TWINFIELD_CLIENT_SECRET` (your own Twinfield client), or with
+ *    `TWINFIELD_CONNECT_CLIENT_ID` and `TWINFIELD_CONNECT_CLIENT_SECRET` (Twinfield Connect).
  * 2. The profile of `vendor/bin/twinfield login` in `~/.config/twinfield/credentials.json`: the
  *    given profile, else `TWINFIELD_PROFILE`, else `default`.
  *
