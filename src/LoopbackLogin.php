@@ -8,6 +8,7 @@ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use SolveBeam\Twinfield\OAuth2\AccessTokenValidation;
 use SolveBeam\Twinfield\OAuth2\Provider\AbstractTwinfieldProvider;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Browser login: opens the Twinfield login, catches the redirect on localhost and exchanges the
@@ -23,12 +24,11 @@ final readonly class LoopbackLogin
     private const int TIMEOUT = 300;
 
     /**
-     * @param resource $input
-     * @param resource $output
+     * @param resource $input The stream the pasted redirect URL of a manual login is read from.
      */
     public function __construct(
         private mixed $input,
-        private mixed $output,
+        private OutputInterface $output,
     ) {
     }
 
@@ -87,7 +87,7 @@ final readonly class LoopbackLogin
 
     private function line(string $text = ''): void
     {
-        fwrite($this->output, $text . PHP_EOL);
+        $this->output->writeln($text, OutputInterface::OUTPUT_RAW);
     }
 
     private static function openBrowser(string $url): void
@@ -210,7 +210,7 @@ final readonly class LoopbackLogin
     {
         $this->line('After logging in, your browser goes to ' . $redirectUri . ' (the page may not load).');
 
-        fwrite($this->output, 'Paste the full URL from the address bar: ');
+        $this->output->write('Paste the full URL from the address bar: ', false, OutputInterface::OUTPUT_RAW);
 
         $url = trim((string) fgets($this->input));
 

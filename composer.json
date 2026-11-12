@@ -1,6 +1,6 @@
 {
   "name": "solvebeam/twinfield-cli",
-  "description": "The Twinfield command line tool: log in once with twf, then use that login from the shell and from PHP",
+  "description": "Twinfield CLI brings Twinfield to your terminal. Free and open source.",
   "homepage": "https://github.com/solvebeam/twinfield-cli",
   "license": "MIT",
   "authors": [
@@ -44,7 +44,8 @@
     "league/oauth2-client": "^2.9",
     "solvebeam/oauth2-twinfield": "^0.1.1",
     "solvebeam/twinfield": "^0.2",
-    "solvebeam/twinfield-connect": "^0.1.1"
+    "solvebeam/twinfield-connect": "^0.1.1",
+    "symfony/console": "^6.4 || ^7.0 || ^8.0"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.3",
@@ -60,6 +61,9 @@
     "allow-plugins": {
       "php-http/discovery": true
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "platform": {
+      "php": "8.3.0"
+    }
   }
 }

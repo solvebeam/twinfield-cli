@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 use SolveBeam\Twinfield\Cli\Application;
+use SolveBeam\Twinfield\Cli\CredentialsException;
 use SolveBeam\Twinfield\Cli\CredentialStore;
 
 // Installed as a dependency, Composer's bin proxy tells where the autoloader is.
@@ -11,5 +12,7 @@ $autoload = $GLOBALS['_composer_autoload_path'] ?? __DIR__ . '/../vendor/autoloa
 
 require $autoload;
 
-/** @var list<string> $argv */
-exit((new Application(STDIN, STDOUT, STDERR, CredentialStore::default()))->run($argv));
+// The messages and the help name the command the way it was called.
+CredentialsException::calledAs($_SERVER['argv'][0] ?? '');
+
+exit((new Application(CredentialStore::default()))->run());

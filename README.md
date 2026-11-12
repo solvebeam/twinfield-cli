@@ -1,5 +1,7 @@
 # Twinfield CLI
 
+Twinfield CLI brings Twinfield to your terminal. Free and open source.
+
 Log in to Twinfield once from the command line, then use that login in tests, examples and scripts:
 
 ```sh
@@ -39,6 +41,8 @@ vendor/bin/twf login --rest    # also ask for all REST API scopes
 vendor/bin/twf status          # show the logins
 vendor/bin/twf token           # print a valid access token, e.g. for curl
 vendor/bin/twf logout          # remove the login
+vendor/bin/twf list            # show all commands
+vendor/bin/twf login --help    # show the options of a command
 ```
 
 The command is `twf`, after the `twf.` prefix Twinfield uses itself (`twf.organisationCode`). `vendor/bin/twinfield` is the same command under its long name.

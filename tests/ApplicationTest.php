@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SolveBeam\Twinfield\Cli\Tests;
 
 use SolveBeam\Twinfield\Cli\Application;
+use SolveBeam\Twinfield\Cli\CredentialsException;
+use Symfony\Component\Console\Tester\ApplicationTester;
 
 final class ApplicationTest extends TestCase
 {
@@ -13,16 +15,19 @@ final class ApplicationTest extends TestCase
         [$status, $output, $error] = $this->twf();
 
         self::assertSame(0, $status);
-        self::assertStringContainsString('twf login', $output);
+        self::assertStringContainsString('Twinfield CLI brings Twinfield to your terminal.', $output);
+        self::assertMatchesRegularExpression('/^  login +Log in with your browser$/m', $output);
         self::assertSame('', $error);
     }
 
-    public function testHelpOption(): void
+    public function testHelpOptionShowsTheHelpOfTheCommand(): void
     {
-        [$status, $output] = $this->twf('status', '--help');
+        [$status, $output] = $this->twf('login', '--help');
 
         self::assertSame(0, $status);
-        self::assertStringContainsString('Usage:', $output);
+        self::assertStringContainsString('login [options]', $output);
+        self::assertStringContainsString('--manual', $output);
+        self::assertStringContainsString('--profile=PROFILE', $output);
     }
 
     public function testUnknownCommand(): void
@@ -31,7 +36,7 @@ final class ApplicationTest extends TestCase
 
         self::assertSame(1, $status);
         self::assertSame('', $output);
-        self::assertStringContainsString('Unknown command "foo"', $error);
+        self::assertStringContainsString('Command "foo" is not defined.', $error);
     }
 
     public function testUnknownOption(): void
@@ -39,15 +44,15 @@ final class ApplicationTest extends TestCase
         [$status, , $error] = $this->twf('status', '--foo');
 
         self::assertSame(1, $status);
-        self::assertStringContainsString('Unknown option "--foo"', $error);
+        self::assertStringContainsString('The "--foo" option does not exist.', $error);
     }
 
-    public function testOptionWithoutAValue(): void
+    public function testAnEmptyProfileIsTheDefaultProfile(): void
     {
-        [$status, , $error] = $this->twf('token', '--profile');
+        [$status, , $error] = $this->twf('token', '--profile=');
 
         self::assertSame(1, $status);
-        self::assertStringContainsString('Option --profile needs a value', $error);
+        self::assertStringContainsString('Not logged in to Twinfield. Run: vendor/bin/twf login', $error);
     }
 
     public function testStatusWhenNotLoggedIn(): void
@@ -154,23 +159,20 @@ final class ApplicationTest extends TestCase
 
         self::assertStringContainsString('Run: vendor/bin/twf login --profile=acme', $error);
 
-        [, , $error] = $this->twfAs('bin/twinfield', 'foo');
+        [, , $error] = $this->twfAs('bin/twinfield', 'status');
 
-        self::assertStringContainsString('See: bin/twinfield help', $error);
+        self::assertStringContainsString('Run: bin/twinfield login', $error);
     }
 
     public function testHelpNamesTheCommandAsItWasCalled(): void
     {
         [, $output] = $this->twfAs('vendor/bin/twf');
 
-        self::assertStringContainsString('  twf login     Log in with your browser', $output);
         self::assertStringContainsString('`twinfield` is the long name of `twf`', $output);
 
-        [, $output] = $this->twfAs('vendor/bin/twinfield', '--help');
+        [, $output] = $this->twfAs('vendor/bin/twinfield', 'list');
 
-        self::assertStringContainsString('  twinfield login     Log in with your browser', $output);
         self::assertStringContainsString('`twf` is the short name of `twinfield`', $output);
-        self::assertStringNotContainsString('%', $output);
     }
 
     public function testACommandOnThePathIsNamedWithoutItsDirectory(): void
@@ -209,30 +211,41 @@ final class ApplicationTest extends TestCase
 
         unset($arguments['input']);
 
-        $streams = [];
+        // bin/twf does this with the script name it was called with.
+        CredentialsException::calledAs($script);
 
-        foreach (['input', 'output', 'error'] as $name) {
-            $stream = fopen('php://memory', 'w+');
+        $application = new Application($this->store());
+        $application->setAutoExit(false);
 
-            self::assertIsResource($stream);
+        $tester = new ApplicationTester($application);
+        $tester->setInputs([$input]);
 
-            $streams[$name] = $stream;
+        $status = $tester->run(self::input(...array_values($arguments)), ['capture_stderr_separately' => true]);
+
+        return [$status, $tester->getDisplay(), $tester->getErrorOutput()];
+    }
+
+    /**
+     * The command line as the array an ApplicationTester takes: `--profile=acme` becomes `['--profile' => 'acme']`.
+     *
+     * @return array<string, string|true>
+     */
+    private static function input(string ...$arguments): array
+    {
+        $input = [];
+
+        foreach ($arguments as $argument) {
+            if (!str_starts_with($argument, '--')) {
+                $input['command'] = $argument;
+
+                continue;
+            }
+
+            $parts = explode('=', $argument, 2);
+
+            $input[$parts[0]] = $parts[1] ?? true;
         }
 
-        fwrite($streams['input'], $input);
-        rewind($streams['input']);
-
-        $application = new Application($streams['input'], $streams['output'], $streams['error'], $this->store());
-
-        $status = $application->run([$script, ...array_values($arguments)]);
-
-        rewind($streams['output']);
-        rewind($streams['error']);
-
-        return [
-            $status,
-            (string) stream_get_contents($streams['output']),
-            (string) stream_get_contents($streams['error']),
-        ];
+        return $input;
     }
 }
