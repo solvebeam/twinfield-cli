@@ -57,7 +57,12 @@
   "scripts": {
     "phpcs": "phpcs",
     "phpstan": "phpstan analyse --no-progress",
-    "phpunit": "phpunit"
+    "phpunit": "phpunit",
+    "test": [
+      "@phpcs",
+      "@phpstan",
+      "@phpunit"
+    ]
   },
   "config": {
     "allow-plugins": {

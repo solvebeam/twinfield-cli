@@ -15,8 +15,8 @@ A Composer package with the `twf` command: it logs in to Twinfield and stores th
 - `twf` is a Symfony Console application, like Composer: `Application` extends the one of `symfony/console`.
 - Each command is a class in `src/Command/` that extends `SolveBeam\Twinfield\Cli\Command\Command`. That class gives it the `CredentialStore`, the `--profile` option, `profileName()` and `twinfield()`. Register a new command in `Application`.
 - A command in a group is a command in a Symfony namespace, `office:list`, and is written with a space like `gh repo list`: `twf office list`. `Application::arguments()` translates it. Write `twf office list` in the README, the help text and tests.
-- Call `parent::configure()` in `configure()`, so the command keeps `--profile`. Get the Twinfield client with `Command::twinfield()`: it uses that profile.
-- Print a list like `gh repo list`, see `OfficeListCommand`: in a terminal the `Table` helper of Symfony with the style `compact`, in a pipe tab-separated lines without a header. Escape the values of a table with `OutputFormatter::escape()`. Add `--json` for the same rows as JSON.
+- Call `parent::configure()` in `configure()`, so the command keeps `--profile`. Get the Twinfield client with `Command::twinfield()`: it uses that profile. The option for the office (company) of a request is `--office`, see `ProcessXmlCommand`.
+- Print a list like `gh repo list`, see `OfficeListCommand`: in a terminal (`Command::isTerminal()`) the `Table` helper of Symfony with the style `compact`, in a pipe tab-separated lines without a header. Escape the values of a table with `OutputFormatter::escape()`. Add `--json` for the same rows as JSON.
 - Write the classic style, `#[AsCommand]` with `configure()` and `execute()`: the package supports `symfony/console` 6.4, 7 and 8, so it fits in the project of the user.
 - Write output with `OutputInterface::OUTPUT_RAW`, so a `<` in a value is not read as a formatting tag.
 - Throw an exception for an error. `Application` prints it as one line, `Error: …`, with exit status 1; `-v` shows the trace.
@@ -26,6 +26,8 @@ A Composer package with the `twf` command: it logs in to Twinfield and stores th
 Run all three before you commit; CI runs them on PHP 8.3, 8.4 and 8.5.
 
 ```sh
+composer test     # all three, in this order
+
 composer phpcs    # PSR-12, also for bin/twf and bin/twinfield
 composer phpstan  # level 8
 composer phpunit

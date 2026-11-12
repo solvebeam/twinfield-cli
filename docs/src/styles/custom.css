@@ -1,0 +1,99 @@
+/* Twinfield blue (#007bc1), as on php.twinfield.solvebeam.com. Dark theme (default) */
+:root {
+	--sl-color-accent-low: #0a2940;
+	--sl-color-accent: #3ea6e3;
+	--sl-color-accent-high: #c7e6f8;
+	--sl-hue-accent: 202;
+	--sl-font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+	--sl-content-width: 46rem;
+}
+
+/* Light theme */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #d3eaf8;
+	--sl-color-accent: #007bc1;
+	--sl-color-accent-high: #003557;
+}
+
+/* The site title reads as the name of a program. */
+.site-title {
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-lg);
+	letter-spacing: -0.02em;
+}
+
+/* The manual in the sidebar is a list of commands. */
+.sidebar-content a[href*='/manual/'],
+.sidebar-content a[href*='/manual/'] + ul,
+.sidebar-content summary:has(+ ul a[href*='/manual/']) .large:not(.group-label > .large) {
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-xs);
+}
+
+/* Commands and options in the text. */
+.sl-markdown-content :not(pre) > code {
+	border-radius: 0.25rem;
+	padding: 0.15rem 0.35rem;
+}
+
+.sl-markdown-content :is(h2, h3) code {
+	background: none;
+	padding: 0;
+}
+
+/* Arguments and options: a table that reads as a list, the name in the first column. */
+.sl-markdown-content table:has(th:first-child:is(:empty, :only-child)),
+.sl-markdown-content table {
+	display: table;
+	width: 100%;
+}
+
+.sl-markdown-content table :is(th, td) {
+	padding: 0.5rem 1rem 0.5rem 0;
+	vertical-align: top;
+	border-bottom: 1px solid var(--sl-color-hairline);
+}
+
+.sl-markdown-content table th {
+	font-size: var(--sl-text-xs);
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--sl-color-gray-3);
+}
+
+.sl-markdown-content table tr:nth-child(2n) {
+	background: none;
+}
+
+.sl-markdown-content table td:first-child {
+	white-space: nowrap;
+}
+
+.sl-markdown-content table td:first-child code {
+	background: none;
+	padding: 0;
+	color: var(--sl-color-text-accent);
+	font-weight: 600;
+}
+
+/* On a narrow screen an option stands above its description. */
+@media (max-width: 40rem) {
+	.sl-markdown-content table thead {
+		display: none;
+	}
+
+	.sl-markdown-content table :is(tr, td) {
+		display: block;
+	}
+
+	.sl-markdown-content table td {
+		padding-inline-end: 0;
+	}
+
+	.sl-markdown-content table td:first-child {
+		padding-bottom: 0;
+		border-bottom: 0;
+		white-space: normal;
+	}
+}

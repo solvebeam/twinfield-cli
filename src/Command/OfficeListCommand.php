@@ -14,7 +14,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * `twf office list`: the offices (companies, administrations) the logged in user has access to.
@@ -72,7 +71,7 @@ final class OfficeListCommand extends Command
 
         $json = $input->getOption('json') === true;
 
-        if (!$json && $output instanceof StreamOutput && stream_isatty($output->getStream())) {
+        if (!$json && $this->isTerminal($output)) {
             self::table($offices, $output);
 
             return self::SUCCESS;

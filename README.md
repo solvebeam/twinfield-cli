@@ -42,6 +42,7 @@ vendor/bin/twf status          # show the logins
 vendor/bin/twf token           # print a valid access token, e.g. for curl
 vendor/bin/twf logout          # remove the login
 vendor/bin/twf office list     # list the offices
+vendor/bin/twf process-xml     # send an XML request
 vendor/bin/twf list            # show all commands
 vendor/bin/twf login --help    # show the options of a command
 ```
@@ -67,6 +68,22 @@ In a terminal the offices are a table. In a pipe they are tab-separated lines wi
 ```sh
 vendor/bin/twf office list | cut -f1
 ```
+
+### XML requests
+
+`process-xml` sends a request to the [XML web services](https://developers.twinfield.com/documentation/api/types/xml-web-services/) of Twinfield (ProcessXml), like `gh api`. With it you read, create and change anything these web services support:
+
+```sh
+vendor/bin/twf process-xml request.xml --office=1000
+
+echo '<read><type>office</type><code>1000</code></read>' | vendor/bin/twf process-xml --office=1000
+```
+
+`xml` is the short name of `process-xml`: `vendor/bin/twf xml request.xml`.
+
+The request comes from a file or from standard input; `--office` is the code of the office (company) the request is for. The response is printed as Twinfield returned it, and indented in a terminal.
+
+When Twinfield does not process (all of) the request, the response is printed too: it has the messages (`msg`) on the elements they are about. The error goes to standard error and the exit status is 1.
 
 ### Profiles
 

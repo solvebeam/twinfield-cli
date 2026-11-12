@@ -10,6 +10,7 @@ use RuntimeException;
 use SolveBeam\Twinfield\Cli\Command\LoginCommand;
 use SolveBeam\Twinfield\Cli\Command\LogoutCommand;
 use SolveBeam\Twinfield\Cli\Command\OfficeListCommand;
+use SolveBeam\Twinfield\Cli\Command\ProcessXmlCommand;
 use SolveBeam\Twinfield\Cli\Command\StatusCommand;
 use SolveBeam\Twinfield\Cli\Command\TokenCommand;
 use Symfony\Component\Console\Application as ConsoleApplication;
@@ -39,6 +40,7 @@ final class Application extends ConsoleApplication
             new TokenCommand($store),
             new LogoutCommand($store),
             new OfficeListCommand($store, $httpClient),
+            new ProcessXmlCommand($store, $httpClient),
         ]);
     }
 

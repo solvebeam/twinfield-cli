@@ -12,6 +12,8 @@ use SolveBeam\Twinfield\Twinfield;
 use Symfony\Component\Console\Command\Command as ConsoleCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\StreamOutput;
 
 /**
  * A command of `twf`: works with the stored logins and takes `--profile`.
@@ -51,6 +53,14 @@ abstract class Command extends ConsoleCommand
     protected function profileName(InputInterface $input): string
     {
         return $this->option($input, 'profile') ?? Env::get('TWINFIELD_PROFILE') ?? 'default';
+    }
+
+    /**
+     * True when the output goes to a terminal, false in a pipe or a file: output for people or for a script.
+     */
+    protected function isTerminal(OutputInterface $output): bool
+    {
+        return $output instanceof StreamOutput && stream_isatty($output->getStream());
     }
 
     /**

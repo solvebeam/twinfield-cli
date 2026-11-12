@@ -339,6 +339,97 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('Example B.V.', $output);
     }
 
+    public function testProcessXmlSendsTheRequestOfStandardInput(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::processXmlResponse(
+            '<office result="1"><code>1000</code><name>A &amp; B</name></office>',
+        );
+
+        [$status, $output, $error] = $this->twfWithInput(
+            '<read><type>office</type><code>1000</code></read>',
+            'process-xml',
+            '--office=1000',
+        );
+
+        self::assertSame('', $error);
+        self::assertSame(0, $status);
+        self::assertSame('<office result="1"><code>1000</code><name>A &amp; B</name></office>' . PHP_EOL, $output);
+        self::assertCount(1, $this->requests);
+        self::assertStringContainsString('&lt;read&gt;&lt;type&gt;office&lt;/type&gt;', $this->requests[0]);
+        self::assertStringContainsString('<CompanyCode>1000</CompanyCode>', $this->requests[0]);
+    }
+
+    public function testXmlIsTheShortNameOfProcessXml(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::processXmlResponse('<office result="1"><code>1000</code></office>');
+
+        [$status, $output] = $this->twfWithInput('<read><type>office</type><code>1000</code></read>', 'xml');
+
+        self::assertSame(0, $status);
+        self::assertSame('<office result="1"><code>1000</code></office>' . PHP_EOL, $output);
+    }
+
+    public function testProcessXmlSendsTheRequestOfAFile(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::processXmlResponse('<office result="1"><code>1000</code></office>');
+
+        $file = $this->directory . '/request.xml';
+
+        file_put_contents($file, '<read><type>office</type><code>1000</code></read>');
+
+        try {
+            [$status, $output] = $this->twf('process-xml', $file);
+        } finally {
+            unlink($file);
+        }
+
+        self::assertSame(0, $status);
+        self::assertStringContainsString('<code>1000</code>', $output);
+        self::assertStringContainsString('&lt;code&gt;1000&lt;/code&gt;', $this->requests[0]);
+        self::assertStringNotContainsString('<CompanyCode>', $this->requests[0]);
+    }
+
+    public function testProcessXmlPrintsTheResponseOfAFailedRequest(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+        $this->responses[] = self::processXmlResponse(
+            '<office result="0"><code msgtype="error" msg="No access." result="0">9999</code></office>',
+        );
+
+        [$status, $output, $error] = $this->twfWithInput(
+            '<read><type>office</type><code>9999</code></read>',
+            'process-xml',
+        );
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString('msg="No access."', $output);
+        self::assertStringContainsString('Error: office/code: No access.', $error);
+    }
+
+    public function testProcessXmlWithoutARequest(): void
+    {
+        $this->store()->saveProfile('default', self::profile());
+
+        [$status, , $error] = $this->twf('process-xml');
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString('No XML request. Give a file or pipe the XML: vendor/bin/twf', $error);
+
+        [$status, , $error] = $this->twf('process-xml', $this->directory . '/no-such-file.xml');
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString('Cannot read the file', $error);
+
+        [$status, , $error] = $this->twfWithInput('<read>', 'process-xml');
+
+        self::assertSame(1, $status);
+        self::assertStringContainsString('not valid XML', $error);
+        self::assertSame([], $this->requests);
+    }
+
     public function testAGroupAloneShowsItsCommands(): void
     {
         foreach ([['office'], ['office', '--help'], ['help', 'office']] as $arguments) {
@@ -412,6 +503,25 @@ final class ApplicationTest extends TestCase
     }
 
     /**
+     * A response of ProcessXml with this XML as result.
+     */
+    private static function processXmlResponse(string $xml): Response
+    {
+        $result = htmlspecialchars($xml, ENT_XML1);
+
+        return new Response(200, ['Content-Type' => 'text/xml; charset=utf-8'], <<<XML
+            <?xml version="1.0" encoding="utf-8"?>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+              <soap:Body>
+                <ProcessXmlStringResponse xmlns="http://www.twinfield.com/">
+                  <ProcessXmlStringResult>{$result}</ProcessXmlStringResult>
+                </ProcessXmlStringResponse>
+              </soap:Body>
+            </soap:Envelope>
+            XML);
+    }
+
+    /**
      * An HTTP client that gives the responses of the test instead of calling Twinfield.
      */
     private function httpClient(): Client
@@ -464,7 +574,11 @@ final class ApplicationTest extends TestCase
         // bin/twf reads `office list` as `office:list` in the same way.
         $arguments = $application->arguments(array_values($arguments));
 
-        $status = $tester->run(self::input($application, ...$arguments), ['capture_stderr_separately' => true]);
+        // Without `decorated` the output takes the colours of the terminal the tests run in.
+        $status = $tester->run(self::input($application, ...$arguments), [
+            'capture_stderr_separately' => true,
+            'decorated' => false,
+        ]);
 
         return [$status, $tester->getDisplay(), $tester->getErrorOutput()];
     }
