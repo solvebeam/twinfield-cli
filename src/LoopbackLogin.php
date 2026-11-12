@@ -153,6 +153,9 @@ final readonly class LoopbackLogin
                     continue;
                 }
 
+                // Browsers open connections they never use; do not wait for those.
+                stream_set_timeout($connection, 2);
+
                 $target = explode(' ', (string) fgets($connection))[1] ?? '/';
 
                 if (parse_url($target, PHP_URL_PATH) !== $path) {
