@@ -7,3 +7,4 @@
 /phpunit.xml.dist  export-ignore
 /composer.lock     export-ignore
 /tests             export-ignore
+/docs              export-ignore

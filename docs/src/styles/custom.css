@@ -24,8 +24,7 @@
 
 /* The manual in the sidebar is a list of commands. */
 .sidebar-content a[href*='/manual/'],
-.sidebar-content a[href*='/manual/'] + ul,
-.sidebar-content summary:has(+ ul a[href*='/manual/']) .large:not(.group-label > .large) {
+.sidebar-content ul ul summary .large {
 	font-family: var(--sl-font-mono);
 	font-size: var(--sl-text-xs);
 }
@@ -42,7 +41,6 @@
 }
 
 /* Arguments and options: a table that reads as a list, the name in the first column. */
-.sl-markdown-content table:has(th:first-child:is(:empty, :only-child)),
 .sl-markdown-content table {
 	display: table;
 	width: 100%;
@@ -95,5 +93,10 @@
 		padding-bottom: 0;
 		border-bottom: 0;
 		white-space: normal;
+	}
+
+	.sl-markdown-content table td:not(:first-child) {
+		margin-top: 0;
+		padding-top: 0.15rem;
 	}
 }

@@ -40,6 +40,16 @@ composer phpunit
 - Give the responses of Twinfield with `$this->responses[]` in `ApplicationTest`: the `Application` gets a PSR-18 client with the `MockHandler` of Guzzle.
 - Extend `SolveBeam\Twinfield\Cli\Tests\TestCase`: it gives each test its own `TWINFIELD_CONFIG_DIR` and clears the `TWINFIELD_*` environment variables.
 
+## Docs
+
+The manual on https://cli.twinfield.solvebeam.com/ is the Astro Starlight site in `docs/`, like the manual of the GitHub CLI.
+
+- `docs/src/content/docs/manual/` has a page for each command, written by hand: `twf_login.md`, and `twf_office_list.md` for `twf office list`. A group has a page too, `twf_office.md`.
+- A page has these parts, in this order: the usage in a `sh` code block, the description, `## Arguments`, `## Options`, `## Examples` and `## See also`. Arguments and options are tables; write an option as `--limit=<number>` and an argument as `<pattern>`.
+- For a new command: write its page, add it to the sidebar in `docs/astro.config.mjs` and to the table in `manual/twf.md`. `DocsTest` fails when a command has no page, or when the page does not name an argument, an option or an alias.
+- Guides that are not about one command go in `docs/src/content/docs/guides/`.
+- Build the site with `npm run build` in `docs/`; `npm run dev` shows it on http://localhost:4321/.
+
 ## Credentials file
 
 - Change `credentials.json` only through `CredentialStore`: it locks the file, keeps it at mode 0600 and leaves it as it was when a change fails.
