@@ -24,6 +24,11 @@
       "SolveBeam\\Twinfield\\Cli\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "SolveBeam\\Twinfield\\Cli\\Tests\\": "tests/"
+    }
+  },
   "require": {
     "php": "^8.3",
     "ext-json": "*",
@@ -34,11 +39,13 @@
   },
   "require-dev": {
     "phpstan/phpstan": "^2.3",
+    "phpunit/phpunit": "^12",
     "squizlabs/php_codesniffer": "^4.0"
   },
   "scripts": {
     "phpcs": "phpcs",
-    "phpstan": "phpstan analyse --no-progress"
+    "phpstan": "phpstan analyse --no-progress",
+    "phpunit": "phpunit"
   },
   "config": {
     "allow-plugins": {
