@@ -61,6 +61,8 @@ final readonly class Application
      */
     public function run(array $argv): int
     {
+        CredentialsException::calledAs($argv[0] ?? '');
+
         try {
             [$command, $options] = $this->parse(array_slice($argv, 1));
 
@@ -75,7 +77,7 @@ final readonly class Application
                 'logout' => $this->logout($options),
                 null, 'help' => $this->help(),
                 default => throw new CredentialsException(
-                    sprintf('Unknown command "%s". See: twinfield help', $command),
+                    sprintf('Unknown command "%s". See: %s', $command, CredentialsException::command('help')),
                 ),
             };
         } catch (Throwable $exception) {
@@ -282,7 +284,11 @@ final readonly class Application
             $parts = explode('=', substr($argument, 2), 2);
 
             if (!in_array($parts[0], self::OPTIONS, true)) {
-                throw new CredentialsException(sprintf('Unknown option "--%s". See: twinfield help', $parts[0]));
+                throw new CredentialsException(sprintf(
+                    'Unknown option "--%s". See: %s',
+                    $parts[0],
+                    CredentialsException::command('help'),
+                ));
             }
 
             $options[$parts[0]] = $parts[1] ?? true;

@@ -148,6 +148,28 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('Twinfield returned "access_denied": No', $error);
     }
 
+    public function testMessagesNameTheCommandAsItWasCalled(): void
+    {
+        [, , $error] = $this->twinfieldAs('vendor/bin/twf', 'logout', '--profile=acme');
+
+        self::assertStringContainsString('Run: vendor/bin/twf login --profile=acme', $error);
+
+        [, , $error] = $this->twinfieldAs('bin/twinfield', 'foo');
+
+        self::assertStringContainsString('See: bin/twinfield help', $error);
+    }
+
+    public function testACommandOnThePathIsNamedWithoutItsDirectory(): void
+    {
+        [, , $error] = $this->twinfieldAs('/home/jdoe/.composer/vendor/bin/twf', 'status');
+
+        self::assertStringContainsString('Run: twf login', $error);
+
+        [, , $error] = $this->twinfieldAs('C:\\Users\\jdoe\\vendor\\bin\\twf', 'status');
+
+        self::assertStringContainsString('Run: twf login', $error);
+    }
+
     /**
      * @return array{int, string, string}
      */
@@ -161,6 +183,18 @@ final class ApplicationTest extends TestCase
      */
     private function twinfieldWithInput(string $input, string ...$arguments): array
     {
+        return $this->twinfieldAs('vendor/bin/twinfield', ...$arguments, input: $input);
+    }
+
+    /**
+     * @return array{int, string, string} Exit status, standard output and standard error.
+     */
+    private function twinfieldAs(string $script, string ...$arguments): array
+    {
+        $input = $arguments['input'] ?? '';
+
+        unset($arguments['input']);
+
         $streams = [];
 
         foreach (['input', 'output', 'error'] as $name) {
@@ -176,7 +210,7 @@ final class ApplicationTest extends TestCase
 
         $application = new Application($streams['input'], $streams['output'], $streams['error'], $this->store());
 
-        $status = $application->run(['twinfield', ...array_values($arguments)]);
+        $status = $application->run([$script, ...array_values($arguments)]);
 
         rewind($streams['output']);
         rewind($streams['error']);

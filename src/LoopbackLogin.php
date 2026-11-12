@@ -139,9 +139,10 @@ final readonly class LoopbackLogin
 
         if ($servers === []) {
             throw new CredentialsException(sprintf(
-                'Cannot listen on port %d (%s). Try: vendor/bin/twinfield login --manual',
+                'Cannot listen on port %d (%s). Try: %s',
                 $port,
                 $errorMessage ?? 'unknown',
+                CredentialsException::command('login --manual'),
             ));
         }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SolveBeam\Twinfield\Cli\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use SolveBeam\Twinfield\Cli\CredentialsException;
 use SolveBeam\Twinfield\Cli\CredentialStore;
 use SolveBeam\Twinfield\Cli\Profile;
 
@@ -35,6 +36,9 @@ abstract class TestCase extends BaseTestCase
         }
 
         putenv('TWINFIELD_CONFIG_DIR=' . $this->directory);
+
+        // The messages name the command the way it was last called.
+        CredentialsException::calledAs('vendor/bin/twinfield');
     }
 
     protected function tearDown(): void
