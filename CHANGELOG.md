@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-12
+
 ### Added
 
 - `twf deleted-transaction list`: list the transactions that were deleted in an office, filtered by day book and date of deletion.
@@ -24,5 +26,6 @@ First release.
 - `Credentials::default()`: the stored login for the PHP Twinfield SDK, or a refresh token from environment variables in CI.
 - `twinfield` as the long name of `twf`.
 
-[Unreleased]: https://github.com/solvebeam/twinfield-cli/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/solvebeam/twinfield-cli/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/solvebeam/twinfield-cli/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/solvebeam/twinfield-cli/releases/tag/v0.1.0
