@@ -96,6 +96,8 @@ final readonly class Application
         if ($clientId !== null) {
             $clientSecret = $this->option($options, 'client-secret') ?? Env::get('TWINFIELD_CLIENT_SECRET')
                 ?? throw new CredentialsException('Give the secret of your client with --client-secret.');
+        } elseif ($this->option($options, 'client-secret') !== null) {
+            throw new CredentialsException('Give the ID of your client with --client-id.');
         } else {
             $connectUrl = $this->option($options, 'connect-url') ?? Env::get('TWINFIELD_CONNECT_URL')
                 ?? TwinfieldConnect::CONNECT_URL;
