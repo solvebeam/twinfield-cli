@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use SolveBeam\Twinfield\Cli\Application;
+use SolveBeam\Twinfield\Cli\CredentialStore;
+
+// Installed as a dependency, Composer's bin proxy tells where the autoloader is.
+$autoload = $GLOBALS['_composer_autoload_path'] ?? __DIR__ . '/../vendor/autoload.php';
+
+require $autoload;
+
+/** @var list<string> $argv */
+exit((new Application(STDIN, STDOUT, STDERR, CredentialStore::default()))->run($argv));

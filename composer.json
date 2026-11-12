@@ -1,0 +1,49 @@
+{
+  "name": "solvebeam/twinfield-cli",
+  "description": "Log in to Twinfield from the command line, for tests, examples and scripts",
+  "homepage": "https://github.com/solvebeam/twinfield-cli",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Remco Tolsma",
+      "email": "remcotolsma@gmail.com"
+    }
+  ],
+  "keywords": [
+    "twinfield",
+    "cli",
+    "oauth2",
+    "login",
+    "credentials"
+  ],
+  "bin": [
+    "bin/twinfield"
+  ],
+  "autoload": {
+    "psr-4": {
+      "SolveBeam\\Twinfield\\Cli\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^8.3",
+    "ext-json": "*",
+    "league/oauth2-client": "^2.9",
+    "solvebeam/oauth2-twinfield": "^0.1.1",
+    "solvebeam/twinfield": "^0.2",
+    "solvebeam/twinfield-connect": "^0.1.1"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.3",
+    "squizlabs/php_codesniffer": "^3.10"
+  },
+  "scripts": {
+    "phpcs": "phpcs",
+    "phpstan": "phpstan analyse --no-progress"
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
+    },
+    "sort-packages": true
+  }
+}

@@ -1,1 +1,89 @@
-# twinfield-cli
+# Twinfield CLI
+
+Log in to Twinfield once from the command line, then use that login in tests, examples and scripts:
+
+```sh
+composer require --dev solvebeam/twinfield-cli
+vendor/bin/twinfield login
+```
+
+```php
+use SolveBeam\Twinfield\Cli\Credentials;
+use SolveBeam\Twinfield\Twinfield;
+
+$twinfield = Twinfield::create(Credentials::default());
+
+foreach ($twinfield->offices()->list() as $office) {
+    echo $office->code, ' ', $office->name, PHP_EOL;
+}
+```
+
+It works like `gcloud auth application-default login`, `aws sso login` or `gh auth login`: the command line tool stores the login, and your code picks it up without knowing about OAuth.
+
+You do not need a Twinfield client ID: by default the login goes through [Twinfield Connect](https://github.com/solvebeam/twinfield-connect-php). The first login registers the Twinfield CLI with Twinfield Connect once per machine.
+
+## When to use it
+
+- Tests and examples that call the live Twinfield API.
+- Scripts you run yourself, such as an import or a report.
+- CI, with environment variables instead of the login (see below).
+
+In an application where users log in themselves, use [solvebeam/twinfield-connect](https://github.com/solvebeam/twinfield-connect-php) or [solvebeam/oauth2-twinfield](https://github.com/solvebeam/twinfield-oauth2-php) and store the refresh tokens yourself.
+
+## Commands
+
+```sh
+vendor/bin/twinfield login           # log in with your browser
+vendor/bin/twinfield login --manual  # paste the redirected URL yourself, e.g. over SSH
+vendor/bin/twinfield login --rest    # also ask for all REST API scopes
+vendor/bin/twinfield status          # show the logins
+vendor/bin/twinfield token           # print a valid access token, e.g. for curl
+vendor/bin/twinfield logout          # remove the login
+```
+
+`login` opens the Twinfield login in your browser and catches the redirect on `http://localhost:8765/callback`.
+
+### Profiles
+
+Use a profile for each organisation:
+
+```sh
+vendor/bin/twinfield login --profile=acme
+```
+
+```php
+$twinfield = Twinfield::create(Credentials::default('acme'));
+```
+
+Or choose the profile with `TWINFIELD_PROFILE=acme`.
+
+### Your own Twinfield client
+
+```sh
+vendor/bin/twinfield login --client-id=… --client-secret=… --redirect-uri=http://localhost:8765/callback
+```
+
+The redirect URI must be registered with your client.
+
+## Where the login is stored
+
+In `~/.config/twinfield/credentials.json`, or in `$XDG_CONFIG_HOME/twinfield/` or `$TWINFIELD_CONFIG_DIR/` when set. Only you can read the file (0600).
+
+The file holds the refresh token and the last access token. `Credentials::default()` uses the access token until it expires, then refreshes it and writes the new tokens back. Writes lock the file, so processes that run at the same time do not overwrite each other's refresh token.
+
+## CI and environment variables
+
+When `TWINFIELD_REFRESH_TOKEN` is set, `Credentials::default()` uses it instead of the file:
+
+| Variable | |
+|---|---|
+| `TWINFIELD_REFRESH_TOKEN` | The refresh token. |
+| `TWINFIELD_CONNECT_CLIENT_ID`, `TWINFIELD_CONNECT_CLIENT_SECRET` | The Twinfield Connect client, see `credentials.json`. |
+| `TWINFIELD_CLIENT_ID`, `TWINFIELD_CLIENT_SECRET` | Or your own Twinfield client. |
+| `TWINFIELD_CONNECT_URL` | Only for a Twinfield Connect you run yourself. |
+
+Tokens from environment variables are not written back.
+
+## License
+
+The MIT License (MIT). See [LICENSE](LICENSE).
