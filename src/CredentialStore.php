@@ -86,6 +86,11 @@ final readonly class CredentialStore
 
     public function removeProfile(string $name): bool
     {
+        // Nothing to remove; do not create the file.
+        if (!is_file($this->path)) {
+            return false;
+        }
+
         $removed = false;
 
         $this->update(static function (array $data) use ($name, &$removed): array {
