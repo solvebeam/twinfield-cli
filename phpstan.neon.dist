@@ -5,3 +5,4 @@ parameters:
     - src
     - tests
     - bin/twinfield
+    - bin/twf

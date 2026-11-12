@@ -5,6 +5,7 @@
 
   <rule ref="PSR12" />
 
+  <file>bin/twf</file>
   <file>bin/twinfield</file>
   <file>src</file>
   <file>tests</file>

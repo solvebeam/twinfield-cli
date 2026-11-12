@@ -23,6 +23,8 @@ final readonly class Application
           twinfield token     Print a valid access token
           twinfield logout    Remove a login
 
+        `twf` is the short name of `twinfield`: twf login, twf status, …
+
         Options:
           --profile=NAME      The login to use, for more organisations (default: TWINFIELD_PROFILE or "default")
           --manual            login: paste the redirected URL yourself, e.g. over SSH

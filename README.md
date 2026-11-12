@@ -41,6 +41,8 @@ vendor/bin/twinfield token           # print a valid access token, e.g. for curl
 vendor/bin/twinfield logout          # remove the login
 ```
 
+`vendor/bin/twf` is the short name of `vendor/bin/twinfield`, after the `twf.` prefix Twinfield uses itself: `vendor/bin/twf login`.
+
 `login` opens the Twinfield login in your browser and catches the redirect on `http://localhost:8765/callback`.
 
 ### Profiles

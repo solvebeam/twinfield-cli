@@ -25,7 +25,8 @@
     "credentials"
   ],
   "bin": [
-    "bin/twinfield"
+    "bin/twinfield",
+    "bin/twf"
   ],
   "autoload": {
     "psr-4": {
